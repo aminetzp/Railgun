@@ -16,6 +16,14 @@ on:
         required: false
         default: 'false'
 
+# ⚠️ fork 的默认 GITHUB_TOKEN 是 read-only，会导致第 18 步
+#    "Upload firmware to release"（softprops/action-gh-release）403。
+#    2026-10-15 首次编译实测：编译成功但 Release 上传失败。
+#    显式声明 contents: write 才能创建 Release。
+permissions:
+  contents: write
+  actions: write
+
 env:
   # 老板要的是 ImmortalWrt，不是 LEDE
   REPO_URL: https://github.com/immortalwrt/immortalwrt
