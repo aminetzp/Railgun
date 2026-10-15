@@ -1,0 +1,8 @@
+src-git packages https://github.com/immortalwrt/packages.git;openwrt-24.10
+src-git luci https://github.com/immortalwrt/luci.git;openwrt-24.10
+src-git routing https://github.com/openwrt/routing.git;openwrt-24.10
+src-git telephony https://github.com/openwrt/telephony.git;openwrt-24.10
+# 老板需求只用 ZT，注释掉代理相关 feed（腾空间 + 减少编译时间）
+# src-git helloworld https://github.com/fw876/helloworld.git
+# src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main
+# src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main

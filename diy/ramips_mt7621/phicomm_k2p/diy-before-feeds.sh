@@ -1,17 +1,7 @@
 #!/bin/bash
+# ImmortalWrt K2P 定制 - feeds update 之前执行
+# 老板需求：AP 模式 + ZeroTier，禁用所有代理/科学上网 feed
+# 写于 2026-10-15
 
-function git_sparse_clone() {
-    git clone --filter=blob:none --no-checkout --depth=1 $1 $2 && cd $2
-    git sparse-checkout init --cone
-    git sparse-checkout set $3
-    git checkout
-    mv $3 ../$4
-    cd ../ && rm -rf $2
-}
-
-# Enable helloworld
-sed -i 's/^#\(.*helloworld\)/\1/' feeds.conf.default
-
-# Add passwall
-echo 'src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages.git;main' >> feeds.conf.default
-echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall.git;main' >> feeds.conf.default    
+# 已通过覆盖 feeds.conf.default 禁用了 helloworld / passwall，
+# 此处仅作预留位置（避免破坏原 Railgun 模板结构）。

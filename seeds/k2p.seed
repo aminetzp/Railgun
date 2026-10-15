@@ -1,96 +1,100 @@
+# K2P + ZeroTier 极简配置（基于 LEDE/Railgun 模板）
+# 目标：AP 模式 + ZeroTier 子网路由 + 802.11r 漫游
+# 写于 2026-10-15
+
+# ============= 目标板：Phicomm K2P =============
 CONFIG_TARGET_ramips=y
 CONFIG_TARGET_ramips_mt7621=y
 CONFIG_TARGET_ramips_mt7621_DEVICE_phicomm_k2p=y
-CONFIG_PACKAGE_6in4=y
-CONFIG_PACKAGE_coreutils-nohup=y
-CONFIG_PACKAGE_ddns-scripts_cloudflare.com-v4=y
-CONFIG_PACKAGE_ddns-scripts_no-ip_com=y
-CONFIG_PACKAGE_ip6tables=y
-CONFIG_PACKAGE_ipt2socks=y
+
+# ============= 镜像格式（仅 K2P 适用的 sysupgrade） =============
+CONFIG_PACKAGE_ipq-wifi-pikvm-wifi-steering=y
+
+# ============= 内核模块：K2P WiFi 驱动 =============
+CONFIG_PACKAGE_kmod-mt76x2=y
+CONFIG_PACKAGE_kmod-mt76x2-common=y
+CONFIG_PACKAGE_kmod-mt76=y
+CONFIG_PACKAGE_kmod-mac80211=y
+
+# ============= ZeroTier 核心 + LuCI 界面 =============
+CONFIG_PACKAGE_zerotier=y
+CONFIG_PACKAGE_luci-app-zerotier=y
+CONFIG_PACKAGE_luci-i18n-zerotier-zh-cn=y
+
+# ============= 基础网络（显式声明避免依赖飘移） =============
+CONFIG_PACKAGE_dnsmasq-full=y
+CONFIG_PACKAGE_firewall4=y
+CONFIG_PACKAGE_ip-full=y
+CONFIG_PACKAGE_iptables-mod-nat=y
 CONFIG_PACKAGE_iptables-mod-conntrack-extra=y
-CONFIG_PACKAGE_iptables-mod-iprange=y
-CONFIG_PACKAGE_iptables-mod-socket=y
-CONFIG_PACKAGE_ipv6helper=y
-CONFIG_PACKAGE_kmod-crypto-kpp=y
-CONFIG_PACKAGE_kmod-crypto-lib-chacha20=y
-CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=y
-CONFIG_PACKAGE_kmod-crypto-lib-curve25519=y
-CONFIG_PACKAGE_kmod-crypto-lib-poly1305=y
-CONFIG_PACKAGE_kmod-inet-diag=y
-CONFIG_PACKAGE_kmod-ip6tables=y
-CONFIG_PACKAGE_kmod-ipt-conntrack-extra=y
-CONFIG_PACKAGE_kmod-ipt-iprange=y
-CONFIG_PACKAGE_kmod-ipt-nat6=y
-CONFIG_PACKAGE_kmod-ipt-socket=y
-CONFIG_PACKAGE_kmod-iptunnel=y
-CONFIG_PACKAGE_kmod-iptunnel4=y
-CONFIG_PACKAGE_kmod-lib-zstd=y
-CONFIG_PACKAGE_kmod-netlink-diag=y
-# CONFIG_PACKAGE_kmod-nf-conntrack-netlink is not set
-CONFIG_PACKAGE_kmod-nf-ipt6=y
-CONFIG_PACKAGE_kmod-nf-log6=y
-CONFIG_PACKAGE_kmod-nf-nat6=y
-CONFIG_PACKAGE_kmod-nf-reject6=y
-CONFIG_PACKAGE_kmod-nf-socket=y
-CONFIG_PACKAGE_kmod-sit=y
-CONFIG_PACKAGE_kmod-udptunnel4=y
-CONFIG_PACKAGE_kmod-udptunnel6=y
-CONFIG_PACKAGE_kmod-wireguard=y
-CONFIG_PACKAGE_kmod-zram=y
-# CONFIG_PACKAGE_libev is not set
-# CONFIG_PACKAGE_libmbedtls is not set
-# CONFIG_PACKAGE_libopenssl-legacy is not set
-# CONFIG_PACKAGE_libsodium is not set
-# CONFIG_PACKAGE_libudns is not set
-# CONFIG_PACKAGE_lua-neturl is not set
-# CONFIG_PACKAGE_luci-app-filetransfer is not set
-# CONFIG_PACKAGE_luci-app-nlbwmon is not set
-CONFIG_PACKAGE_luci-app-omcproxy=y
-CONFIG_PACKAGE_luci-app-passwall=y
-# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ShadowsocksR_Libev_Client is not set
-# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_Libev_Client is not set
-# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Simple_Obfs is not set
-CONFIG_PACKAGE_luci-app-passwall_INCLUDE_SingBox=y
-# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan_Plus is not set
-CONFIG_PACKAGE_luci-app-passwall_Iptables_Transparent_Proxy=y
-# CONFIG_PACKAGE_luci-app-ssr-plus is not set
-# CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_PDNSD is not set
-CONFIG_PACKAGE_luci-app-udpxy=y
-# CONFIG_PACKAGE_luci-app-vsftpd is not set
-CONFIG_PACKAGE_luci-app-wireguard=y
-CONFIG_PACKAGE_luci-i18n-omcproxy-zh-cn=y
-CONFIG_PACKAGE_luci-i18n-passwall-zh-cn=y
-CONFIG_PACKAGE_luci-i18n-udpxy-zh-cn=y
-CONFIG_PACKAGE_luci-i18n-wireguard-zh-cn=y
-# CONFIG_PACKAGE_luci-lib-fs is not set
-# CONFIG_PACKAGE_luci-lib-ipkg is not set
-CONFIG_PACKAGE_luci-proto-ipv6=y
-CONFIG_PACKAGE_luci-proto-wireguard=y
-CONFIG_PACKAGE_mtkiappd=y
-# CONFIG_PACKAGE_nlbwmon is not set
-CONFIG_PACKAGE_odhcp6c=y
-CONFIG_PACKAGE_odhcp6c_ext_cer_id=0
-CONFIG_PACKAGE_odhcpd-ipv6only=y
-CONFIG_PACKAGE_odhcpd_ipv6only_ext_cer_id=0
-CONFIG_PACKAGE_omcproxy=y
-# CONFIG_PACKAGE_pdnsd-alt is not set
-# CONFIG_PACKAGE_shadowsocks-libev-ss-local is not set
-# CONFIG_PACKAGE_shadowsocks-libev-ss-redir is not set
-# CONFIG_PACKAGE_shadowsocksr-libev-ssr-check is not set
-# CONFIG_PACKAGE_shadowsocksr-libev-ssr-local is not set
-# CONFIG_PACKAGE_shadowsocksr-libev-ssr-redir is not set
-# CONFIG_PACKAGE_simple-obfs-client is not set
-CONFIG_PACKAGE_sing-box=y
-CONFIG_PACKAGE_udpxy=y
-CONFIG_PACKAGE_unzip=y
-# CONFIG_PACKAGE_vsftpd-alt is not set
-CONFIG_PACKAGE_wireguard-tools=y
+CONFIG_PACKAGE_kmod-nf-nat=y
+CONFIG_PACKAGE_kmod-nf-conntrack=y
+
+# ============= K2P 性能加速 =============
+CONFIG_PACKAGE_kmod-mtkiappd=y            # MTK HWNAT 千兆转发零 CPU
+CONFIG_PACKAGE_kmod-zram=y                # 128MB RAM 必备 zram 压缩
 CONFIG_PACKAGE_zram-swap=y
-CONFIG_SING_BOX_WITH_QUIC=y
-CONFIG_SING_BOX_WITH_UTLS=y
-# CONFIG_ZRAM_DEF_COMP_LZORLE is not set
-CONFIG_ZRAM_DEF_COMP_ZSTD=y
-# CONFIG_SING_BOX_WITH_CLASH_API is not set
-# CONFIG_SING_BOX_WITH_DHCP is not set
-# CONFIG_SING_BOX_WITH_ECH is not set
-# CONFIG_SING_BOX_WITH_WIREGUARD is not set
+CONFIG_PACKAGE_kmod-crypto-zstd=y
+
+# ============= 必备工具 =============
+CONFIG_PACKAGE_curl=y
+CONFIG_PACKAGE_wget=y
+CONFIG_PACKAGE_ca-certificates=y          # HTTPS 证书（zerotier 联网用）
+CONFIG_PACKAGE_nano=y                    # 编辑器
+CONFIG_PACKAGE_tar=y
+CONFIG_PACKAGE_etherwake=y               # 远程唤醒（您已用需求）
+CONFIG_PACKAGE_luci-app-wol=y            # WOL Web 界面
+
+# ============= LuCI 主题与基础 =============
+CONFIG_PACKAGE_luci=y
+CONFIG_PACKAGE_luci-base=y
+CONFIG_PACKAGE_luci-mod-admin-full=y
+CONFIG_PACKAGE_luci-theme-bootstrap=y     # 主题（默认轻量）
+CONFIG_PACKAGE_luci-i18n-base-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-firewall-zh-cn=y
+CONFIG_PACKAGE_luci-i18n-wol-zh-cn=y
+
+# ============= 显式关闭无关插件（腾出 flash 空间） =============
+# 代理/翻墙相关
+# CONFIG_PACKAGE_luci-app-passwall is not set
+# CONFIG_PACKAGE_luci-app-ssr-plus is not set
+# CONFIG_PACKAGE_luci-app-openclash is not set
+# CONFIG_PACKAGE_sing-box is not set
+# CONFIG_PACKAGE_xray-core is not set
+
+# VPN（与 ZeroTier 互斥）
+# CONFIG_PACKAGE_luci-app-wireguard is not set
+# CONFIG_PACKAGE_wireguard-tools is not set
+
+# IPv6 全套关闭（AP 模式不需要）
+# CONFIG_PACKAGE_6in4 is not set
+# CONFIG_PACKAGE_6rd is not set
+# CONFIG_PACKAGE_ip6tables is not set
+# CONFIG_PACKAGE_kmod-ip6tables is not set
+# CONFIG_PACKAGE_odhcp6c is not set
+# CONFIG_PACKAGE_odhcpd-ipv6only is not set
+# CONFIG_PACKAGE_ipv6helper is not set
+# CONFIG_PACKAGE_kmod-sit is not set
+# CONFIG_PACKAGE_kmod-iptunnel is not set
+# CONFIG_PACKAGE_kmod-iptunnel4 is not set
+# CONFIG_PACKAGE_kmod-udptunnel4 is not set
+# CONFIG_PACKAGE_kmod-udptunnel6 is not set
+# CONFIG_PACKAGE_kmod-nf-ipt6 is not set
+# CONFIG_PACKAGE_kmod-nf-log6 is not set
+# CONFIG_PACKAGE_kmod-nf-nat6 is not set
+# CONFIG_PACKAGE_kmod-nf-reject6 is not set
+# CONFIG_PACKAGE_luci-proto-ipv6 is not set
+
+# IPTV/代理/SS/无用工具
+# CONFIG_PACKAGE_luci-app-udpxy is not set
+# CONFIG_PACKAGE_luci-app-omcproxy is not set
+# CONFIG_PACKAGE_luci-app-sqm is not set
+# CONFIG_PACKAGE_luci-app-nlbwmon is not set
+# CONFIG_PACKAGE_luci-app-flowoffload is not set
+# CONFIG_PACKAGE_luci-app-arpbind is not set
+# CONFIG_PACKAGE_luci-app-accesscontrol is not set
+# CONFIG_PACKAGE_luci-app-adbyby-plus is not set
+# CONFIG_PACKAGE_luci-app-ddns is not set
+# CONFIG_PACKAGE_luci-app-upnp is not set
+# CONFIG_PACKAGE_luci-app-filetransfer is not set
+# CONFIG_PACKAGE_luci-app-ttyd is not set

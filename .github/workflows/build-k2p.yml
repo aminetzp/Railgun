@@ -1,14 +1,11 @@
 #
 # Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-# Description: Build OpenWrt using GitHub Actions
+# Based on P3TERX/Actions-OpenWrt
+# Modified by aminetzp for K2P + ImmortalWrt + ZeroTier
+# 写于 2026-10-15
 #
 
-name: Build Railgun for Phicomm K2P
+name: Build ImmortalWrt for Phicomm K2P
 
 on:
   repository_dispatch:
@@ -20,8 +17,9 @@ on:
         default: 'false'
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  # 老板要的是 ImmortalWrt，不是 LEDE
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: seeds/k2p.seed
   DIY_P1_SH: diy/ramips_mt7621/phicomm_k2p/diy-before-feeds.sh
@@ -153,7 +151,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")-phicomm_k2p" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")-phicomm_k2p-immortalwrt" >> $GITHUB_OUTPUT
         touch release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
